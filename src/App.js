@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import './App.css';
+import classes from './App.css';
 //import Radium, { StyleRoot } from 'radium';
 //Radium makes it possible to do inline psuedo selectors and media queries
 import Person from './Person/Person'
@@ -73,6 +73,7 @@ deletePersonHandler =(personIndex)=>{
 
   render() {
 //You can use in-line styling or css files. Use inline when you want to scope your styling
+/*inline styling
     const style = {
       backgroundColor: 'green',
       color:'white',
@@ -80,15 +81,19 @@ deletePersonHandler =(personIndex)=>{
       border: '1px solid blue',
       padding: '8px',
       cursor: 'pointer',
+
+
+
       /*
       ':hover': {
         backgroundColor: 'lightGreen',
         color: 'black'
       }
       */
-    };
+/* };   */
 //prefered way of outputting conditional content. Because render re renders everything when called.
     let persons =null;
+    let btnClass='';
 
     if (this.state.showPersons){
       persons=(
@@ -107,36 +112,41 @@ deletePersonHandler =(personIndex)=>{
           changed={(event) =>this.nameChangedHandler(event, person.id)}/>
           })}
       </div>
+
       );
 //does this when you click the button due to the if statement up there.
-      style.backgroundColor= 'red';
+    //this is inline styling  style.backgroundColor= 'red';
     /*  Radium feature
     style[':hover']={
         backgroundColor: 'salmon',
         color:'black'
       };
       */
+
+        btnClass=classes.Red;
     }
     //assigning multiple classes
-    const classes=[];
+    const assignedClasses=[];
     if(this.state.persons.length<=2){
-      classes.push('red'); //classes will be rend
+      assignedClasses.push(classes.red); //classes will be rend
     }
     if(this.state.persons.length<=1){
-      classes.push('bold'); //classes will be rend
+      assignedClasses.push(classes.bold); //classes will be rend
     }
 
     return (
       //Must wrap in StyleRoot if we use Radium media queries, and import at app.js
     //  <StyleRoot>
-      <div className="App">
+      <div className={classes.App}>
       {/* Components go here */}
         <h1>App</h1>
             {/* You gotta use join to make one string of classes from the array */}
-        <p className={classes.join(' ')}>this is working</p>
+        <p className={assignedClasses.join(' ')}>this is working</p>
           {/* do not add () after function name because it will invoke immediately */}
         <button
-          style={style}
+          className={btnClass}
+          //inline styling below
+      //    style={style}
           onClick={this.togglePersonsHandler}
           >Switch Name</button>
         {/* 'This' refers to class */}

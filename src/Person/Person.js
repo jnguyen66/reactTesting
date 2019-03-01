@@ -1,6 +1,6 @@
 import React from 'react';
 
-import './Person.css';
+import classes from './Person.css';
 //Dont need to import component because we are not using a class thats extends component
 
 
@@ -11,7 +11,7 @@ import './Person.css';
 const person = (props) => {
 
   return(
-    <div className='Person'>
+    <div className={classes.person}>
       <p onClick={props.click}>I'm {props.name} and I am {props.age} years old!</p>
 
       <p>{props.children}</p>
