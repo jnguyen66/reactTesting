@@ -2,9 +2,15 @@ import React, { Component } from 'react';
 import classes from './App.css';
 //import Radium, { StyleRoot } from 'radium';
 //Radium makes it possible to do inline psuedo selectors and media queries
-import Person from './Person/Person'
+import Persons from '../components/Persons/Persons'
+import Cockpit from '../components/Cockpit/Cockpit'
 //Container components or smart components or stateful components. You only want a couple of these. You want more functional than smart components.
 //Main logic should sit in your smart component.
+
+
+//You only want App.js or Container to manage the state and manipulate the state with handlers. the rest should
+//be in functional components
+
 class App extends Component {
   //State manages inside component, and only works when extending Component
   state={
@@ -40,7 +46,7 @@ nameChangedHandler = (event, id) => {
     ...this.state.persons[personIndex]
   };
 //Based on event, takes value of input and replaces the copy of peron's name
-  person.name=event.target.value
+  person.name=event.target.value;
 
 //makes a copy of OG persons state
   const persons = [...this.state.persons];
@@ -72,85 +78,25 @@ deletePersonHandler =(personIndex)=>{
 }
 
   render() {
-//You can use in-line styling or css files. Use inline when you want to scope your styling
-/*inline styling
-    const style = {
-      backgroundColor: 'green',
-      color:'white',
-      font: 'inherit',
-      border: '1px solid blue',
-      padding: '8px',
-      cursor: 'pointer',
-
-
-
-      /*
-      ':hover': {
-        backgroundColor: 'lightGreen',
-        color: 'black'
-      }
-      */
-/* };   */
-//prefered way of outputting conditional content. Because render re renders everything when called.
     let persons =null;
-    let btnClass='';
-
     if (this.state.showPersons){
-      persons=(
-        <div >
-                {/* Map is a crucial ES6 function that allows us
-                  map each element of the array in state into
-                  mulitple components */}
-          {this.state.persons.map((person, index) => {
-                  // Alternative to that arrow function down there would be to bind
-            return <Person
-              click={() =>this.deletePersonHandler(index)}
-              name={person.name}
-              age={person.age}
-              //Key is necessary to map correctly
-            key={person.id}
-          changed={(event) =>this.nameChangedHandler(event, person.id)}/>
-          })}
-      </div>
+      persons=
 
-      );
-//does this when you click the button due to the if statement up there.
-    //this is inline styling  style.backgroundColor= 'red';
-    /*  Radium feature
-    style[':hover']={
-        backgroundColor: 'salmon',
-        color:'black'
-      };
-      */
-
-        btnClass=classes.Red;
-    }
-    //assigning multiple classes
-    const assignedClasses=[];
-    if(this.state.persons.length<=2){
-      assignedClasses.push(classes.red); //classes will be rend
-    }
-    if(this.state.persons.length<=1){
-      assignedClasses.push(classes.bold); //classes will be rend
-    }
+          <Persons
+            persons={this.state.persons}
+            clicked={this.deletePersonHandler}
+            changed={this.nameChangedHandler}/>;
+      }
 
     return (
       //Must wrap in StyleRoot if we use Radium media queries, and import at app.js
     //  <StyleRoot>
       <div className={classes.App}>
-      {/* Components go here */}
-        <h1>App</h1>
-            {/* You gotta use join to make one string of classes from the array */}
-        <p className={assignedClasses.join(' ')}>this is working</p>
-          {/* do not add () after function name because it will invoke immediately */}
-        <button
-          className={btnClass}
-          //inline styling below
-      //    style={style}
-          onClick={this.togglePersonsHandler}
-          >Switch Name</button>
-        {/* 'This' refers to class */}
-        {/* Tunerary expression below. If true render after whats after ? if not then after : null */}
+        <Cockpit
+          title={this.props.appTitle}
+          showPersons={this.state.showPersons}
+          persons={this.state.persons}
+          clicked={this.togglePersonsHandler}/>
         {persons}
       </div>
     //  </StyleRoot>
@@ -160,3 +106,13 @@ deletePersonHandler =(personIndex)=>{
 
 //export default Radium(App);
 export default App;
+
+/*  Run npm eject to unlock css Module
+add and commit changes before doing so
+npm run eject
+edit webpack.config file
+find the test for /\.css$/
+set modules to true
+add localIdentName: '[name]__[local]__[hash:base64:5]'
+import classes from '.Example.css'
+  */
