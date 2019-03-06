@@ -1,7 +1,29 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import classes from './Cockpit.css'
 
 const cockpit = (props)=>{
+  //no argument executes for every render cycle
+  //useEffect more than once. Put an empty array if you only want it to run once. No dependencies to compare. You can have mulitple fields too.
+useEffect(()=> {
+  console.log('[Cockpit.js] useEffect');
+  //Http Request....
+  setTimeout(()=>{
+    alert('saved data to cloud!');
+  }, 1000);
+  //RUns before the main useEffect function but after the first render cycle
+  return ()=>{
+
+    console.log('[Cockpit.js] clean up work in useEffect')
+  };
+}, [props.persons]);
+
+
+useEffect(()=>{
+  console.log('[Cockpit.js] 2nd useEffect');
+  return ()=>{
+    console.log('[Cockpit.js] clean up work in 2nd useEffect')
+  };
+});
 
   //assigning multiple classes
   const assignedClasses=[];
@@ -44,10 +66,10 @@ const cockpit = (props)=>{
 
 
 
-  if(props.persons.length<=2){
+  if(props.personsLength<=2){
     assignedClasses.push(classes.red); //classes will be rend
   }
-  if(props.persons.length<=1){
+  if(props.personsLength<=1){
     assignedClasses.push(classes.bold); //classes will be rend
   }
   return(
@@ -68,5 +90,5 @@ const cockpit = (props)=>{
 
   );
 };
-
-export default cockpit;
+//React memo takes a snapshot and only updates it if any of the props changes
+export default React.memo(cockpit);

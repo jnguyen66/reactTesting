@@ -4,6 +4,7 @@ import classes from './App.css';
 //Radium makes it possible to do inline psuedo selectors and media queries
 import Persons from '../components/Persons/Persons'
 import Cockpit from '../components/Cockpit/Cockpit'
+import WithClass from '../hoc/WithClass'
 //Container components or smart components or stateful components. You only want a couple of these. You want more functional than smart components.
 //Main logic should sit in your smart component.
 
@@ -12,6 +13,10 @@ import Cockpit from '../components/Cockpit/Cockpit'
 //be in functional components
 
 class App extends Component {
+  constructor(props){
+    super(props);
+    console.log('[App.js] constructor');
+  }
   //State manages inside component, and only works when extending Component
   state={
     persons:[
@@ -20,8 +25,45 @@ class App extends Component {
       {id: 3,name: 'Stephanie', age: 26}
     ],
     otherState: 'some other value',
-    showPersons:false
+    showPersons:false,
+    showCockpit: true
   }
+
+//1. used to initilize state of component based on props received from external properties, but not used often.
+  static getDerivedStateFromProps(props, state){
+    console.log('[App.js] getDerivedStateFromProps', props);
+    return state;
+  }
+  //
+
+  //2. Used to decide whether ot continue to update or not
+  //shouldComponentUpdate(nextProps, nextState){
+
+  //}
+
+  //4. Last Minute DOM ops
+  //getSnapshotBeforeUpdate(prevProps, prevState){
+  //  console.log('[App.js] getSnapshotBeforeUpdate...');
+  //}
+  // componentWillMount(){
+  //   console.log('[App.js] componentWillMount...');
+  // }
+
+  //This method runs after everything on the intial create cycle
+    componentDidMount(){
+      console.log('[App.js] conponentDidMount...');
+    }
+    //THis runs before rendering update
+    shouldComponentUpdate(nextProps, nextState){
+        console.log('[App.js] shouldComponentUpdate');
+        //if false it will not update
+        return true;
+    }
+//this runs once update is complete or at the end of the update cycle
+    componentDidUpdate(){
+        console.log('[App.js] componentDidUpdate');
+    }
+
 //handler is usually followed by method names. Using arrow function helps fix the 'this' issue.
 /*switchNameHandler = (newName)=>{
   //console.log('wasclicked');
@@ -76,29 +118,33 @@ deletePersonHandler =(personIndex)=>{
   persons.splice(personIndex, 1);
   this.setState({persons: persons});
 }
-
+//3.
   render() {
+    console.log('[App.js] render');
     let persons =null;
     if (this.state.showPersons){
       persons=
-
+      (
           <Persons
             persons={this.state.persons}
             clicked={this.deletePersonHandler}
-            changed={this.nameChangedHandler}/>;
+            changed={this.nameChangedHandler}/>
+          );
       }
 
     return (
       //Must wrap in StyleRoot if we use Radium media queries, and import at app.js
     //  <StyleRoot>
-      <div className={classes.App}>
-        <Cockpit
+      <WithClass classes={classes.App}>
+      <button onClick={()=>{this.setState({showCockpit:false});}}>Remove Cockpit</button>
+        {this.state.showCockpit ? <Cockpit
           title={this.props.appTitle}
           showPersons={this.state.showPersons}
-          persons={this.state.persons}
-          clicked={this.togglePersonsHandler}/>
+          personsLength={this.state.persons.length}
+          clicked={this.togglePersonsHandler}/> : null
+        }
         {persons}
-      </div>
+      </WithClass>
     //  </StyleRoot>
     );
   }
