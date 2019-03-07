@@ -58,7 +58,8 @@ class Persons extends PureComponent {
           age={person.age}
           //Key is necessary to map correctly
           key={person.id}
-          changed={(event) =>this.props.changed(event, person.id)}/>
+          changed={(event) =>this.props.changed(event, person.id)}
+          />
         );
       });
   }

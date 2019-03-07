@@ -1,15 +1,23 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useRef, useContext} from 'react';
 import classes from './Cockpit.css'
-
+import AuthContext from '../../context/auth-context'
 const cockpit = (props)=>{
-  //no argument executes for every render cycle
+  //create the reference
+const toggleBtnRef = React.createRef(null);
+const authContext = useContext(AuthContext);
+
+console.log(authContext.authenticated);
+  //no argument executes for every render cycle. Runs after render cycle
   //useEffect more than once. Put an empty array if you only want it to run once. No dependencies to compare. You can have mulitple fields too.
 useEffect(()=> {
   console.log('[Cockpit.js] useEffect');
   //Http Request....
-  setTimeout(()=>{
-    alert('saved data to cloud!');
-  }, 1000);
+  // setTimeout(()=>{
+  //   alert('saved data to cloud!');
+  // }, 1000);
+
+  //Place reference in useEffect so that the render cycle completes and can be assigned to button
+  toggleBtnRef.current.click();
   //RUns before the main useEffect function but after the first render cycle
   return ()=>{
 
@@ -80,11 +88,22 @@ useEffect(()=>{
       <p className={assignedClasses.join(' ')}>this is working</p>
         {/* do not add () after function name because it will invoke immediately */}
       <button
+        ref = {toggleBtnRef}
         className={btnClass}
         //inline styling below
         //style={style}
         onClick={props.clicked}
-        >Switch Name</button>
+        >Toggle Persons
+        </button>
+
+        {/*Long way of using context
+          // <AuthContext.Consumer>
+          //   {(context) => <button onClick={context.login}>Log in</button>}
+          // </AuthContext.Consumer>*/}
+
+
+          {/*Shorthand as a result of const authContext = useContext(AuthContext); above*/}
+          <button onClick={authContext.login}>Log in</button>
 
       </div>
 

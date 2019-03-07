@@ -2,9 +2,12 @@ import React, { Component } from 'react';
 import classes from './App.css';
 //import Radium, { StyleRoot } from 'radium';
 //Radium makes it possible to do inline psuedo selectors and media queries
-import Persons from '../components/Persons/Persons'
-import Cockpit from '../components/Cockpit/Cockpit'
-import WithClass from '../hoc/WithClass'
+import Persons from '../components/Persons/Persons';
+import Cockpit from '../components/Cockpit/Cockpit';
+import withClass from '../hoc/withClass';
+import Auxilary from '../hoc/Auxilary';
+import PropTypes from 'prop-types';
+import AuthContext from '../context/auth-context';
 //Container components or smart components or stateful components. You only want a couple of these. You want more functional than smart components.
 //Main logic should sit in your smart component.
 
@@ -26,7 +29,9 @@ class App extends Component {
     ],
     otherState: 'some other value',
     showPersons:false,
-    showCockpit: true
+    showCockpit: true,
+    changeCounter: 0,
+    authenticated: false
   }
 
 //1. used to initilize state of component based on props received from external properties, but not used often.
@@ -95,11 +100,13 @@ nameChangedHandler = (event, id) => {
   //assigns the copy of person to the copy of persons OG state
   persons[personIndex]=person;
 //calls set state with the copy of the persons copy
-  this.setState({
-    persons: persons
-  }
-
-  )
+  this.setState((prevState, props)=>{
+    return{
+      persons: persons,
+      //the proper way to update state when depending on previous state
+      changeCounter: prevState.changeCounter + 1
+    }
+  });
 }
 
 
@@ -117,8 +124,12 @@ deletePersonHandler =(personIndex)=>{
   const persons =[...this.state.persons];
   persons.splice(personIndex, 1);
   this.setState({persons: persons});
-}
+};
 //3.
+
+loginHandler = () =>{
+  this.setState({authenticated: true});
+};
   render() {
     console.log('[App.js] render');
     let persons =null;
@@ -128,30 +139,45 @@ deletePersonHandler =(personIndex)=>{
           <Persons
             persons={this.state.persons}
             clicked={this.deletePersonHandler}
-            changed={this.nameChangedHandler}/>
+            changed={this.nameChangedHandler}
+            isAuthenticated={this.state.authenticated}
+
+            />
           );
       }
 
     return (
       //Must wrap in StyleRoot if we use Radium media queries, and import at app.js
     //  <StyleRoot>
-      <WithClass classes={classes.App}>
+      //<WithClass classes={classes.App}>
+      <Auxilary>
       <button onClick={()=>{this.setState({showCockpit:false});}}>Remove Cockpit</button>
-        {this.state.showCockpit ? <Cockpit
-          title={this.props.appTitle}
-          showPersons={this.state.showPersons}
-          personsLength={this.state.persons.length}
-          clicked={this.togglePersonsHandler}/> : null
-        }
-        {persons}
-      </WithClass>
+      {/*Only wrap the components that need it which are cockpit and person
+      Pass in value as if they are props, but when used in the component will be context*/}
+      <AuthContext.Provider
+        value={{
+        authenticated: this.state.authenticated,
+        login: this.loginHandler
+      }}>
+      {this.state.showCockpit ? (
+        <Cockpit
+        title={this.props.appTitle}
+        showPersons={this.state.showPersons}
+        personsLength={this.state.persons.length}
+        clicked={this.togglePersonsHandler}
+        />
+      ): null}
+      {persons}
+      </AuthContext.Provider>
+      </Auxilary>
+    //  </WithClass>
     //  </StyleRoot>
     );
   }
 }
 
 //export default Radium(App);
-export default App;
+export default withClass(App, classes.App);
 
 /*  Run npm eject to unlock css Module
 add and commit changes before doing so
@@ -162,3 +188,6 @@ set modules to true
 add localIdentName: '[name]__[local]__[hash:base64:5]'
 import classes from '.Example.css'
   */
+
+
+  //npm install --save prop-types to help with prop type management
